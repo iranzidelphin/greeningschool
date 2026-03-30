@@ -4,6 +4,7 @@ const ProgressBar = ({
   progress, 
   size = "md", 
   showLabel = true,
+  label = "Progress",
   color = "emerald",
   className = "" 
 }) => {
@@ -29,9 +30,9 @@ const ProgressBar = ({
   return (
     <div className={`w-full ${className}`}>
       {showLabel && (
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm font-bold text-emerald-600">{clampedProgress}%</span>
+        <div className="flex justify-between items-center mb-2 gap-2">
+          <span className="text-sm font-medium text-gray-700 truncate">{label}</span>
+          <span className="text-sm font-bold text-emerald-600 shrink-0">{clampedProgress}%</span>
         </div>
       )}
       <div className={`w-full bg-gray-200 rounded-full ${sizeClass} overflow-hidden`}>

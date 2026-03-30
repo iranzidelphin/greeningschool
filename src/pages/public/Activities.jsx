@@ -1,76 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PublicLayout from "../../layouts/PublicLayout";
 import ActivityCard from "../../components/ActivityCard";
 import Input from "../../components/Input";
 import { Select } from "../../components/Input";
+import { getApprovedActivities } from "../../utils/firestoreSchema";
 
 const Activities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample activities data
-  const activities = [
-    {
-      id: 1,
-      schoolName: "Kigali International Academy",
-      date: "August 18, 2023",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
-      description: "Students participated in a large-scale tree planting initiative, planting over 200 native trees in the school compound and surrounding community areas. The activity aimed to combat deforestation and create shade for future generations.",
-      likes: 142,
-      comments: 28,
-      category: "Tree Planting"
-    },
-    {
-      id: 2,
-      schoolName: "Eco Warriors High School",
-      date: "April 21, 2022",
-      image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&h=400&fit=crop",
-      description: "A comprehensive recycling drive was organized where students collected plastic bottles, paper, and other recyclable materials. The collected items were sorted and sent to local recycling facilities.",
-      likes: 96,
-      comments: 15,
-      category: "Recycling"
-    },
-    {
-      id: 3,
-      schoolName: "Green Sprouts Primary",
-      date: "June 12, 2022",
-      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop",
-      description: "Students established a school garden growing vegetables and herbs. This hands-on learning experience taught children about sustainable agriculture and healthy eating habits.",
-      likes: 120,
-      comments: 22,
-      category: "Gardening"
-    },
-    {
-      id: 4,
-      schoolName: "Rwanda Environmental School",
-      date: "March 15, 2023",
-      image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop",
-      description: "Installation of solar panels to power the school's computer lab. This renewable energy project reduces the school's carbon footprint and serves as an educational tool for students.",
-      likes: 187,
-      comments: 34,
-      category: "Energy"
-    },
-    {
-      id: 5,
-      schoolName: "Sustainable Future Academy",
-      date: "September 5, 2023",
-      image: "https://images.unsplash.com/photo-1618477461853-5f8dd68aa395?w=600&h=400&fit=crop",
-      description: "Students conducted a waste audit and implemented a composting system for organic waste from the school cafeteria. The compost is now used in the school's garden.",
-      likes: 78,
-      comments: 12,
-      category: "Waste Management"
-    },
-    {
-      id: 6,
-      schoolName: "Nature Guardians School",
-      date: "October 22, 2023",
-      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop",
-      description: "Water conservation awareness campaign where students learned about rainwater harvesting and installed water-saving devices throughout the school.",
-      likes: 95,
-      comments: 18,
-      category: "Water Conservation"
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const data = await getApprovedActivities({ limitCount: 100 });
+        if (mounted) setActivities(data);
+      } catch {
+        if (mounted) setActivities([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -82,12 +40,19 @@ const Activities = () => {
     { value: "Water Conservation", label: "Water Conservation" }
   ];
 
-  const filteredActivities = activities.filter(activity => {
-    const matchesSearch = activity.schoolName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || activity.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredActivities = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return activities.filter((activity) => {
+      const matchesSearch =
+        !q ||
+        (activity.schoolName || "").toLowerCase().includes(q) ||
+        (activity.description || "").toLowerCase().includes(q) ||
+        (activity.title || "").toLowerCase().includes(q);
+      const matchesCategory =
+        categoryFilter === "all" || activity.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [activities, categoryFilter, searchQuery]);
 
   return (
     <PublicLayout>
@@ -124,9 +89,26 @@ const Activities = () => {
 
         {/* Activities Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredActivities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
+          {loading ? (
+            <div className="col-span-full text-center text-slate-600 py-10">
+              Loading activities...
+            </div>
+          ) : (
+            filteredActivities.map((activity) => (
+              <ActivityCard
+                key={activity.id}
+                activity={{
+                  schoolName: activity.schoolName || "School",
+                  date: activity.date || activity.createdAt || "",
+                  image: activity.imageUrl || activity.image || null,
+                  description: activity.description || "",
+                  likes: activity.likes || 0,
+                  comments: activity.comments || 0,
+                  category: activity.category || "General",
+                }}
+              />
+            ))
+          )}
         </div>
 
         {filteredActivities.length === 0 && (

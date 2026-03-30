@@ -1,67 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PublicLayout from "../../layouts/PublicLayout";
 import SchoolCard from "../../components/SchoolCard";
 import Input from "../../components/Input";
+import { getApprovedSchools } from "../../utils/firestoreSchema";
 
 const Schools = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [schools, setSchools] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample schools data
-  const schools = [
-    {
-      id: 1,
-      name: "Kigali International Academy",
-      location: "Kigali, Rwanda",
-      activities: 45,
-      status: "approved",
-      joinedDate: "January 15, 2022"
-    },
-    {
-      id: 2,
-      name: "Eco Warriors High School",
-      location: "Musanze, Rwanda",
-      activities: 32,
-      status: "approved",
-      joinedDate: "March 22, 2022"
-    },
-    {
-      id: 3,
-      name: "Green Sprouts Primary",
-      location: "Huye, Rwanda",
-      activities: 28,
-      status: "approved",
-      joinedDate: "May 10, 2022"
-    },
-    {
-      id: 4,
-      name: "Rwanda Environmental School",
-      location: "Rubavu, Rwanda",
-      activities: 56,
-      status: "approved",
-      joinedDate: "July 5, 2022"
-    },
-    {
-      id: 5,
-      name: "Sustainable Future Academy",
-      location: "Nyagatare, Rwanda",
-      activities: 19,
-      status: "approved",
-      joinedDate: "September 18, 2022"
-    },
-    {
-      id: 6,
-      name: "Nature Guardians School",
-      location: "Karongi, Rwanda",
-      activities: 41,
-      status: "approved",
-      joinedDate: "November 3, 2022"
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const data = await getApprovedSchools();
+        if (mounted) setSchools(data);
+      } catch {
+        if (mounted) setSchools([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-  const filteredSchools = schools.filter(school => 
-    school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    school.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSchools = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return schools;
+    return schools.filter(
+      (school) =>
+        (school.name || "").toLowerCase().includes(q) ||
+        (school.location || "").toLowerCase().includes(q)
+    );
+  }, [schools, searchQuery]);
 
   return (
     <PublicLayout>
@@ -95,7 +70,7 @@ const Schools = () => {
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm text-center">
             <div className="text-2xl font-bold text-emerald-600">
-              {schools.reduce((acc, s) => acc + s.activities, 0)}
+              {schools.reduce((acc, s) => acc + Number(s.activities || 0), 0)}
             </div>
             <div className="text-sm text-gray-600">Total Activities</div>
           </div>
@@ -111,9 +86,22 @@ const Schools = () => {
 
         {/* Schools Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSchools.map((school) => (
-            <SchoolCard key={school.id} school={school} />
-          ))}
+          {loading ? (
+            <div className="col-span-full text-center text-slate-600 py-10">
+              Loading schools...
+            </div>
+          ) : (
+            filteredSchools.map((school) => (
+              <SchoolCard
+                key={school.id}
+                school={{
+                  ...school,
+                  profileImage: school.profileImageUrl || school.profileImage,
+                }}
+                to={`/public/schools/${school.schoolId || school.id}`}
+              />
+            ))
+          )}
         </div>
 
         {filteredSchools.length === 0 && (

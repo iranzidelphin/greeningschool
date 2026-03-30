@@ -1,57 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import ActivityCard from "../../components/ActivityCard";
 import Input from "../../components/Input";
 import { Select } from "../../components/Input";
 import Button from "../../components/Button";
+import { useAuth } from "../../contexts/AuthContext";
+import { getSchoolActivities, getUser } from "../../utils/firestoreSchema";
 
 const SchoolActivities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const { user } = useAuth();
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample activities data
-  const activities = [
-    {
-      id: 1,
-      schoolName: "Your School",
-      date: "August 18, 2023",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
-      description: "Students participated in a large-scale tree planting initiative, planting over 200 native trees in the school compound and surrounding community areas.",
-      likes: 142,
-      comments: 28,
-      category: "Tree Planting"
-    },
-    {
-      id: 2,
-      schoolName: "Your School",
-      date: "April 21, 2022",
-      image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&h=400&fit=crop",
-      description: "A comprehensive recycling drive was organized where students collected plastic bottles, paper, and other recyclable materials.",
-      likes: 96,
-      comments: 15,
-      category: "Recycling"
-    },
-    {
-      id: 3,
-      schoolName: "Your School",
-      date: "June 12, 2022",
-      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop",
-      description: "Students established a school garden growing vegetables and herbs. This hands-on learning experience taught children about sustainable agriculture.",
-      likes: 120,
-      comments: 22,
-      category: "Gardening"
-    },
-    {
-      id: 4,
-      schoolName: "Your School",
-      date: "March 15, 2023",
-      image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop",
-      description: "Installation of solar panels to power the school's computer lab. This renewable energy project reduces the school's carbon footprint.",
-      likes: 187,
-      comments: 34,
-      category: "Energy"
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!user?.uid) return;
+      setLoading(true);
+      try {
+        const u = await getUser(user.uid);
+        const schoolId = u?.schoolId || user.uid;
+        const data = await getSchoolActivities(schoolId, { limitCount: 100 });
+        if (mounted) setActivities(data);
+      } catch {
+        if (mounted) setActivities([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [user?.uid]);
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -62,11 +45,16 @@ const SchoolActivities = () => {
     { value: "Waste Management", label: "Waste Management" }
   ];
 
-  const filteredActivities = activities.filter(activity => {
-    const matchesSearch = activity.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || activity.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredActivities = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return activities.filter((activity) => {
+      const matchesSearch =
+        !q || (activity.description || "").toLowerCase().includes(q);
+      const matchesCategory =
+        categoryFilter === "all" || activity.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [activities, categoryFilter, searchQuery]);
 
   return (
     <DashboardLayout subtitle="Manage and view your school's environmental activities">
@@ -118,9 +106,26 @@ const SchoolActivities = () => {
 
       {/* Activities Grid */}
       <div className="grid md:grid-cols-2 gap-6">
-        {filteredActivities.map((activity) => (
-          <ActivityCard key={activity.id} activity={activity} />
-        ))}
+        {loading ? (
+          <div className="col-span-full text-center text-slate-600 py-10">
+            Loading your activities...
+          </div>
+        ) : (
+          filteredActivities.map((activity) => (
+            <ActivityCard
+              key={activity.id}
+              activity={{
+                schoolName: activity.schoolName || "Your School",
+                date: activity.date || activity.createdAt || "",
+                image: activity.imageUrl || null,
+                description: activity.description || "",
+                likes: activity.likes || 0,
+                comments: activity.comments || 0,
+                category: activity.category || "General",
+              }}
+            />
+          ))
+        )}
       </div>
 
       {filteredActivities.length === 0 && (

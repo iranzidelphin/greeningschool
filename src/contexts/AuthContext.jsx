@@ -58,18 +58,34 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
-  const register = async (email, password, displayName) => {
+  const register = async (email, password, displayName, role = "school") => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     
+    // Default values
+    const schoolId = role === "school" ? result.user.uid : null;
+
     // Create user document in Firestore
     await setDoc(doc(db, "users", result.user.uid), {
       uid: result.user.uid,
       email: result.user.email,
       displayName: displayName || "Anonymous",
-      role: "school",
+      role,
+      schoolId,
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString()
     });
+
+    // If the user is a school, create its school profile document
+    if (role === "school") {
+      await setDoc(doc(db, "schools", schoolId), {
+        schoolId,
+        name: displayName || "School",
+        location: "Kigali, Rwanda",
+        status: "pending", // admin can approve later
+        profileImageUrl: null,
+        createdAt: new Date().toISOString()
+      });
+    }
     
     return result;
   };
@@ -81,14 +97,25 @@ export const AuthProvider = ({ children }) => {
     // Check if user exists, if not create document
     const userDoc = await getDoc(doc(db, "users", result.user.uid));
     if (!userDoc.exists()) {
+      const schoolId = result.user.uid;
       await setDoc(doc(db, "users", result.user.uid), {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName || "Anonymous",
         photoURL: result.user.photoURL,
         role: "school",
+        schoolId,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
+      });
+
+      await setDoc(doc(db, "schools", schoolId), {
+        schoolId,
+        name: result.user.displayName || "School",
+        location: "Kigali, Rwanda",
+        status: "pending",
+        profileImageUrl: null,
+        createdAt: new Date().toISOString()
       });
     } else {
       await setDoc(doc(db, "users", result.user.uid), {

@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 // Public Pages
 import Home from "../pages/public/Home";
 import Schools from "../pages/public/Schools";
+import SchoolDetail from "../pages/public/SchoolDetail";
 import Activities from "../pages/public/Activities";
 import Impact from "../pages/public/Impact";
 
@@ -83,6 +84,7 @@ const AppRoutes = () => {
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/public/schools" element={<Schools />} />
+      <Route path="/public/schools/:id" element={<SchoolDetail />} />
       <Route path="/public/activities" element={<Activities />} />
       <Route path="/public/impact" element={<Impact />} />
 

@@ -9,6 +9,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [roleChoice, setRoleChoice] = useState("2"); // 1=admin, 2=school
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(email, password, displayName);
+      const role = roleChoice === "1" ? "admin" : "school";
+      await register(email, password, displayName, role);
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Failed to create account");
@@ -75,6 +77,35 @@ const Register = () => {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Enter your school name"
             />
+
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-gray-700">Account Role</div>
+              <div className="flex gap-6 items-center">
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="1"
+                    checked={roleChoice === "1"}
+                    onChange={() => setRoleChoice("1")}
+                  />
+                  1. Admin
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="2"
+                    checked={roleChoice === "2"}
+                    onChange={() => setRoleChoice("2")}
+                  />
+                  2. School
+                </label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Admin can manage all schools, approvals, and announcements.
+              </p>
+            </div>
 
             <Input
               label="Email address"

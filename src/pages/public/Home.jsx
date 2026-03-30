@@ -1,199 +1,268 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import PublicLayout from "../../layouts/PublicLayout";
-import Card from "../../components/Card";
-import Button from "../../components/Button";
-import ActivityCard from "../../components/ActivityCard";
 
 const Home = () => {
-  const features = [
+  const services = [
     {
-      icon: "🌳",
-      title: "Impact Dashboard",
-      description: "Track trees, waste, energy and measure your school's environmental footprint"
+      icon: "♻️",
+      title: "Carbon Offsetting",
+      description: "Climate-focused actions that reduce emissions and improve air quality."
     },
     {
-      icon: "📸",
-      title: "Eco-Log Activities",
-      description: "Share projects and photos to showcase your environmental initiatives"
+      icon: "⚡",
+      title: "Energy Consulting",
+      description: "Guidance for cleaner energy transitions and long-term sustainability."
     },
     {
-      icon: "🏆",
-      title: "Badges & Rankings",
-      description: "Earn recognition from Bronze to Gold for your environmental achievements"
-    },
-    {
-      icon: "👥",
-      title: "Community & Collaboration",
-      description: "Connect with other schools and share best practices"
-    },
-    {
-      icon: "🎯",
-      title: "Challenges & Leaderboards",
-      description: "Compete and stay motivated with friendly competitions"
+      icon: "🌎",
+      title: "Climate Adaptation",
+      description: "Resilience planning to help communities adapt to climate impacts."
     }
   ];
 
-  const sampleActivities = [
+  const featuredPrograms = [
     {
-      schoolName: "Kigali International Academy",
-      date: "August 18, 2023",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
-      description: "Planting trees, waste, energy in the wanting trees, environmental neededs.",
-      likes: 142,
-      comments: 28,
-      category: "Tree Planting"
+      title: "Dirty Recycling",
+      image: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=600&h=400&fit=crop",
+      description: "Community-level recycling programs to reduce landfill waste."
     },
     {
-      schoolName: "Eco Warriors HS",
-      date: "April 21, 2022",
-      image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&h=400&fit=crop",
-      description: "Recycling drive to recycle it into environmental sinner and rute that schools.",
-      likes: 96,
-      comments: 0,
-      category: "Recycling"
+      title: "Safe Environment",
+      image: "https://images.unsplash.com/photo-1492496913980-501348b61469?w=600&h=400&fit=crop",
+      description: "Awareness and education campaigns for greener neighborhoods."
     },
     {
-      schoolName: "Green Sprouts Primary",
-      date: "June 12, 2022",
-      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop",
-      description: "Garden project to cultivate and project to boast environ gnixise needed.",
-      likes: 120,
-      comments: 0,
-      category: "Gardening"
+      title: "Cleaning Ocean",
+      image: "https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=600&h=400&fit=crop",
+      description: "Volunteer action projects to clean shores and protect ecosystems."
     }
   ];
 
-  const impactStats = [
-    { value: "10,000+", label: "Trees Planted", icon: "🌳" },
-    { value: "5,000kg", label: "Waste Recycled", icon: "♻️" },
-    { value: "200+", label: "Schools Participating", icon: "🏫" }
+  const upcomingActivities = [
+    {
+      title: "Kigali Green Walk",
+      date: "April 12, 2026",
+      place: "Nyarutarama, Kigali",
+      type: "Community Event"
+    },
+    {
+      title: "School Tree Planting Day",
+      date: "April 20, 2026",
+      place: "Gasabo District",
+      type: "Tree Planting"
+    },
+    {
+      title: "Plastic-Free Challenge",
+      date: "May 02, 2026",
+      place: "Kicukiro District",
+      type: "Awareness Campaign"
+    }
   ];
 
   return (
     <PublicLayout>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span className="text-sm font-medium text-emerald-800">ARCOS Environmental Club</span>
-              </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Empowering Schools to{" "}
-                <span className="text-emerald-600">Protect the Environment</span>
+      <section className="relative overflow-hidden bg-[#04231c]">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=1920&h=1080&fit=crop')"
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#031710] via-[#04231c]/95 to-[#04231c]/40" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="text-white">
+              <p className="text-emerald-300 tracking-[0.2em] uppercase text-xs font-semibold mb-6">
+                Natural Environment
+              </p>
+              <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
+                Leading the way to a greener future
               </h1>
-              <p className="text-xl text-gray-600 max-w-lg">
-                Join ARCOS and showcase your school's environmental impact. Together, we can make Rwanda greener!
+              <p className="text-emerald-100/90 max-w-xl mb-8">
+                Ecology is the scientific study of the relationships between
+                organisms and their environments, including their physical and
+                chemical systems.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/register">
-                  <Button variant="primary" size="lg">
-                    Get Started
-                  </Button>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center rounded-lg bg-emerald-500 px-6 py-3 text-white font-semibold hover:bg-emerald-600 transition-colors"
+                >
+                  Join Us Now
                 </Link>
-                <Link to="/public/impact">
-                  <Button variant="outline" size="lg">
-                    Learn More
-                  </Button>
+                <Link
+                  to="/public/impact"
+                  className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-slate-900 font-semibold hover:bg-slate-100 transition-colors"
+                >
+                  Get Started
                 </Link>
               </div>
+              <div className="mt-14 flex items-center gap-6 text-xs uppercase tracking-[0.15em] text-emerald-200/90">
+                <span>Facebook</span>
+                <span>Instagram</span>
+                <span>Twitter</span>
+              </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-3xl transform rotate-3 opacity-20"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&h=600&fit=crop" 
-                alt="Students planting trees" 
-                className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover"
-              />
+            <div className="hidden lg:flex justify-end">
+              <div className="h-80 w-80 rounded-full border border-emerald-300/20 bg-emerald-500/10 backdrop-blur-sm" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Features Section</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Everything your school needs to track, share, and celebrate environmental achievements
+      <section className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="relative">
+            <img
+              src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&h=900&fit=crop"
+              alt="Plant growing in hands"
+              className="w-full max-w-md rounded-2xl shadow-lg object-cover h-[460px]"
+            />
+            <div className="absolute -right-4 top-8 w-2 h-48 bg-emerald-500 rounded-full hidden md:block" />
+          </div>
+          <div>
+            <p className="uppercase tracking-[0.22em] text-xs text-emerald-700 font-semibold mb-4">
+              About with us
             </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {features.map((feature, index) => (
-              <Card key={index} hover className="text-center">
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Activity Preview Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Activity Preview</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              See what schools across Rwanda are doing to protect our environment
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              Building a greener future together forever
+            </h2>
+            <p className="text-slate-600 mb-6">
+              Ecology is the scientific study of relationships between living
+              organisms and environmental systems.
             </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sampleActivities.map((activity, index) => (
-              <ActivityCard key={index} activity={activity} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/public/activities">
-              <Button variant="outline" size="lg">
-                View All Activities
-              </Button>
+            <ul className="space-y-3 text-slate-700 mb-8">
+              <li className="flex items-center gap-2">✅ Know what your target market wants and needs</li>
+              <li className="flex items-center gap-2">✅ A whole lot of digital love for less</li>
+            </ul>
+            <div className="mb-2 flex items-center justify-between text-sm font-semibold text-slate-700">
+              <span>Problem Solving</span>
+              <span>80%</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-emerald-100 mb-8">
+              <div className="h-full w-4/5 rounded-full bg-emerald-500" />
+            </div>
+            <Link
+              to="/public/impact"
+              className="inline-flex items-center rounded-lg bg-emerald-500 px-6 py-3 font-semibold text-white hover:bg-emerald-600 transition-colors"
+            >
+              Explore More
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Impact Stats Section */}
-      <section className="py-20 bg-emerald-600">
+      <section className="py-20 bg-[#eff3ea]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">Impact Stats</h2>
-            <p className="text-emerald-100 max-w-2xl mx-auto">
-              Together, we're making a measurable difference for our planet
-            </p>
+            <p className="uppercase tracking-[0.2em] text-xs text-emerald-700 font-semibold mb-4">Our Services</p>
+            <h2 className="text-4xl font-bold text-slate-900">Preserving The Earth For Future Generations</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {impactStats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-5xl mb-4">{stat.icon}</div>
-                <div className="text-4xl lg:text-5xl font-bold text-white mb-2">{stat.value}</div>
-                <div className="text-emerald-100">{stat.label}</div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <div key={service.title} className="rounded-2xl bg-white p-8 text-center shadow-sm border border-emerald-50">
+                <div className="h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center text-2xl mx-auto mb-4">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">{service.title}</h3>
+                <p className="text-slate-600 text-sm">{service.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-6">
+            {featuredPrograms.map((program) => (
+              <div key={`${program.title}-thumb`} className="rounded-2xl overflow-hidden h-36">
+                <img src={program.image} alt={program.title} className="h-full w-full object-cover" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-emerald-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            Join the Green Movement Today!
-          </h2>
-          <p className="text-emerald-100 text-lg mb-8 max-w-2xl mx-auto">
-            Be part of Rwanda's leading environmental initiative for schools. 
-            Start tracking your impact and inspiring others.
-          </p>
-          <Link to="/register">
-            <Button variant="white" size="lg">
-              Create School Account
-            </Button>
-          </Link>
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <p className="uppercase tracking-[0.2em] text-xs text-emerald-700 font-semibold mb-4">Our Result</p>
+              <h2 className="text-4xl font-bold text-slate-900 mb-4">
+                Getting A Greener Future Safe Environment
+              </h2>
+              <p className="text-slate-600 mb-6">
+                Support ecosystems through practical sustainability work and
+                measurable outcomes for clean and safe communities.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <div className="mb-1 flex items-center justify-between text-sm text-slate-700">
+                    <span>Safe Environment</span>
+                    <span>90%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-emerald-100">
+                    <div className="h-full w-[90%] rounded-full bg-emerald-500" />
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 flex items-center justify-between text-sm text-slate-700">
+                    <span>Dirty Recycling</span>
+                    <span>80%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-emerald-100">
+                    <div className="h-full w-[80%] rounded-full bg-emerald-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {featuredPrograms.map((program) => (
+                <div key={program.title} className="rounded-2xl border border-emerald-100 overflow-hidden bg-white shadow-sm">
+                  <img src={program.image} alt={program.title} className="h-36 w-full object-cover" />
+                  <div className="p-4">
+                    <h3 className="font-semibold text-slate-900 mb-2">{program.title}</h3>
+                    <p className="text-sm text-slate-600">{program.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-[#eff3ea]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between gap-4 mb-10">
+            <div>
+              <p className="uppercase tracking-[0.2em] text-xs text-emerald-700 font-semibold mb-3">
+                Events
+              </p>
+              <h2 className="text-4xl font-bold text-slate-900">Upcoming Activities</h2>
+            </div>
+            <Link
+              to="/public/activities"
+              className="inline-flex items-center rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors"
+            >
+              View All
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {upcomingActivities.map((activity) => (
+              <div
+                key={activity.title}
+                className="rounded-2xl bg-white border border-emerald-100 p-6 shadow-sm"
+              >
+                <p className="text-xs font-semibold tracking-wide uppercase text-emerald-700 mb-3">
+                  {activity.type}
+                </p>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">{activity.title}</h3>
+                <p className="text-slate-600 text-sm mb-1">Date: {activity.date}</p>
+                <p className="text-slate-600 text-sm">Location: {activity.place}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </PublicLayout>

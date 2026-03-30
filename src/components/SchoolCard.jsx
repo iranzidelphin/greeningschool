@@ -1,9 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Card, { CardContent, CardHeader, CardTitle, CardDescription } from "./Card";
 import Button from "./Button";
 
 const SchoolCard = ({ 
   school,
+  to,
   onApprove,
   onReject,
   isAdmin = false 
@@ -13,7 +15,8 @@ const SchoolCard = ({
     location = "Unknown Location",
     activities = 0,
     status = "pending",
-    joinedDate = new Date().toLocaleDateString()
+    joinedDate = new Date().toLocaleDateString(),
+    profileImage,
   } = school;
 
   const statusStyles = {
@@ -22,13 +25,21 @@ const SchoolCard = ({
     rejected: "bg-red-100 text-red-700"
   };
 
-  return (
-    <Card hover={!isAdmin}>
+  const card = (
+    <Card hover={!isAdmin && !!to}>
       <CardHeader className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-            <span className="text-2xl">🏫</span>
-          </div>
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt=""
+              className="w-12 h-12 rounded-full object-cover border border-emerald-100"
+            />
+          ) : (
+            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+              <span className="text-2xl">🏫</span>
+            </div>
+          )}
           <div>
             <CardTitle>{name}</CardTitle>
             <CardDescription>{location}</CardDescription>
@@ -67,6 +78,16 @@ const SchoolCard = ({
       </CardContent>
     </Card>
   );
+
+  if (to && !isAdmin) {
+    return (
+      <Link to={to} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-xl">
+        {card}
+      </Link>
+    );
+  }
+
+  return card;
 };
 
 export default SchoolCard;

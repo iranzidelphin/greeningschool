@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useAuth } from "../../contexts/AuthContext";
+
+const PROFILE_IMAGE_KEY = "gs_school_profile_image";
 
 const SchoolProfile = () => {
   const { user } = useAuth();
@@ -16,8 +18,20 @@ const SchoolProfile = () => {
     description: "A leading environmental school in Rwanda, committed to sustainability and green initiatives.",
     studentCount: "450",
     teacherCount: "25",
-    establishedYear: "2015"
+    establishedYear: "2015",
+    profileImageUrl: "",
   });
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PROFILE_IMAGE_KEY);
+      if (stored) {
+        setFormData((prev) => ({ ...prev, profileImageUrl: stored }));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +39,20 @@ const SchoolProfile = () => {
   };
 
   const handleSave = () => {
-    console.log("Saving profile:", formData);
+    try {
+      const url = (formData.profileImageUrl || "").trim();
+      if (url) {
+        localStorage.setItem(PROFILE_IMAGE_KEY, url);
+      } else {
+        localStorage.removeItem(PROFILE_IMAGE_KEY);
+      }
+      window.dispatchEvent(
+        new CustomEvent("gs-profile-image-updated", { detail: url || null })
+      );
+    } catch {
+      /* ignore */
+    }
     setIsEditing(false);
-    // UI only - would call API in real implementation
   };
 
   return (
@@ -36,9 +61,17 @@ const SchoolProfile = () => {
         {/* Profile Header */}
         <Card className="mb-6">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-4xl">🏫</span>
-            </div>
+            {formData.profileImageUrl ? (
+              <img
+                src={formData.profileImageUrl}
+                alt=""
+                className="w-24 h-24 rounded-2xl object-cover border border-emerald-100 flex-shrink-0"
+              />
+            ) : (
+              <div className="w-24 h-24 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <span className="text-4xl">🏫</span>
+              </div>
+            )}
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">{formData.schoolName}</h1>
               <p className="text-gray-600 mb-4">{formData.description}</p>
@@ -72,6 +105,15 @@ const SchoolProfile = () => {
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 mb-6">School Information</h2>
             <div className="space-y-4">
+              <Input
+                label="School or club photo URL"
+                name="profileImageUrl"
+                type="url"
+                placeholder="https://… (school building or students)"
+                value={formData.profileImageUrl}
+                onChange={handleChange}
+                disabled={!isEditing}
+              />
               <Input
                 label="School Name"
                 name="schoolName"
