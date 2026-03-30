@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+  <div class="bg-white p-8 rounded-lg shadow-md w-96">
+    <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+
+    <form id="loginForm">
+      <input type="email" placeholder="Email" id="email"
+        class="w-full p-2 mb-3 border rounded" required>
+
+      <input type="password" placeholder="Password" id="password"
+        class="w-full p-2 mb-3 border rounded" required>
+
+      <button type="button"
+        class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-700"
+        id="submit">
+        Login
+      </button>
+    </form>
+
+    <!-- Google Button -->
+    <button id="googleLogin"
+      class="w-full mt-3 flex items-center justify-center border p-2 rounded hover:bg-gray-200">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg"
+        class="w-5 h-5 mr-2">
+      Login with Google
+    </button>
+
+    <p class="text-center mt-4 text-sm">
+      Don't have an account?
+      <a href="register.html" class="text-blue-500">Register</a>
+    </p>
+  </div>
+
+  <!-- Firebase + JS -->
+  <script type="module" src="login.js"></script>
+
+</body>
+</html>
