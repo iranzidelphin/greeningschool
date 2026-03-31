@@ -29,6 +29,7 @@ const Sidebar = ({ isAdmin = false }) => {
     { path: "/dashboard", label: "Dashboard", icon: "🏠" },
     { path: "/dashboard/upload", label: "Upload Activity", icon: "📸" },
     { path: "/dashboard/activities", label: "My Activities", icon: "🌱" },
+    { path: "/dashboard/chat", label: "Chat", icon: "💬" },
     { path: "/dashboard/announcements", label: "Announcements", icon: "📢" },
     { path: "/dashboard/profile", label: "Profile", icon: "👤" },
   ];

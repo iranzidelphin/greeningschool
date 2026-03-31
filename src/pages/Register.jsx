@@ -6,6 +6,7 @@ import Input from "../components/Input";
 
 const Register = () => {
   const [displayName, setDisplayName] = useState("");
+  const [schoolName, setSchoolName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,12 +30,19 @@ const Register = () => {
       return;
     }
 
+    if (!displayName.trim() || !schoolName.trim()) {
+      setError("Please enter both your name and school name");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const role = roleChoice === "1" ? "admin" : "school";
-      await register(email, password, displayName, role);
-      navigate("/dashboard");
+      // Always register as a school user per current requirements
+      await register(email, password, displayName, schoolName);
+      // Redirect to login page after successful registration
+      navigate("/login", { state: { message: "Account created successfully! Please sign in and verify your email." } });
     } catch (err) {
       setError(err.message || "Failed to create account");
     } finally {
@@ -70,11 +78,20 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
-              label="School Name"
+              label="Your Name"
               type="text"
               required
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Enter your name"
+            />
+
+            <Input
+              label="School Name"
+              type="text"
+              required
+              value={schoolName}
+              onChange={(e) => setSchoolName(e.target.value)}
               placeholder="Enter your school name"
             />
 

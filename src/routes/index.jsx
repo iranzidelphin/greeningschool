@@ -12,6 +12,7 @@ import Impact from "../pages/public/Impact";
 // Auth Pages
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import VerifyOTP from "../pages/VerifyOTP";
 
 // School Dashboard Pages
 import SchoolDashboard from "../pages/school/Dashboard";
@@ -19,6 +20,7 @@ import SchoolActivities from "../pages/school/Activities";
 import SchoolUpload from "../pages/school/Upload";
 import SchoolAnnouncements from "../pages/school/Announcements";
 import SchoolProfile from "../pages/school/Profile";
+import SchoolChat from "../pages/school/Chat";
 
 // Admin Dashboard Pages
 import AdminDashboard from "../pages/admin/Dashboard";
@@ -105,6 +107,10 @@ const AppRoutes = () => {
           </PublicRoute>
         }
       />
+      <Route
+        path="/verify-otp"
+        element={<VerifyOTP />}
+      />
 
       {/* School Dashboard Routes */}
       <Route
@@ -144,6 +150,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <SchoolProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/chat"
+        element={
+          <ProtectedRoute>
+            <SchoolChat />
           </ProtectedRoute>
         }
       />

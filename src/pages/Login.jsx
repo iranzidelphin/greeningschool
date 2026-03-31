@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { generateOTP, storeOTP, sendOTPEmail } from "../utils/otpService";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
@@ -10,18 +11,50 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, loginWithGoogle, logout } = useAuth();
+
+  useEffect(() => {
+    // Show success message from registration
+    if (location.state?.message) {
+      setSuccess(location.state.message);
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const result = await login(email, password);
+
+      // Fetch user document to get schoolId and verification status
+      const userDoc = await getDoc(doc(db, "users", result.user.uid));
+      let schoolId = null;
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        schoolId = userData.schoolId;
+
+        if (!userData.emailVerified) {
+          // Generate and send OTP
+          const otp = generateOTP();
+          await storeOTP(email, otp);
+          await sendOTPEmail(email, otp);
+
+          // Redirect to OTP verification page
+          navigate("/verify-otp", { state: { email, schoolId } });
+          return;
+        }
+      }
+
+      // Email is verified, go to dashboard
+      navigate("/dashboard", { state: { schoolId } });
     } catch (err) {
       setError(err.message || "Failed to sign in");
     } finally {
@@ -31,6 +64,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -43,6 +77,8 @@ const Login = () => {
         setLoading(false);
         return;
       }
+      
+      // Google accounts are pre-verified, go directly to dashboard
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Failed to sign in with Google");
@@ -72,6 +108,12 @@ const Login = () => {
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
               {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-lg text-sm">
+              {success}
             </div>
           )}
 

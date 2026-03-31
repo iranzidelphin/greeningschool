@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signOut 
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 
 const AuthContext = createContext();
@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -34,18 +36,24 @@ export const AuthProvider = ({ children }) => {
         try {
           const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
           if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserRole(userData.role || "school");
+            const data = userDoc.data();
+            setUserRole(data.role || "school");
+            setEmailVerified(data.emailVerified || false);
+            setUserData(data);
           } else {
             setUserRole("school");
+            setEmailVerified(false);
           }
         } catch (error) {
           console.error("Error fetching user role:", error);
           setUserRole("school");
+          setEmailVerified(false);
         }
       } else {
         setUser(null);
         setUserRole(null);
+        setEmailVerified(false);
+        setUserData(null);
       }
       setLoading(false);
     });
@@ -58,35 +66,40 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
-  const register = async (email, password, displayName, role = "school") => {
+  // Register a new school user and create associated Firestore documents
+  const register = async (email, password, displayName, schoolName) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Default values
-    const schoolId = role === "school" ? result.user.uid : null;
 
-    // Create user document in Firestore
-    await setDoc(doc(db, "users", result.user.uid), {
-      uid: result.user.uid,
+    const uid = result.user.uid;
+    const createdAt = new Date().toISOString();
+
+    // Create user document in "users" collection
+    await setDoc(doc(db, "users", uid), {
+      uid,
       email: result.user.email,
-      displayName: displayName || "Anonymous",
-      role,
-      schoolId,
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString()
+      displayName: displayName || "",
+      role: "school",
+      schoolId: uid,
+      // keep existing fields used elsewhere in the app
+      emailVerified: false,
+      createdAt,
+      lastLogin: createdAt
     });
 
-    // If the user is a school, create its school profile document
-    if (role === "school") {
-      await setDoc(doc(db, "schools", schoolId), {
-        schoolId,
-        name: displayName || "School",
-        location: "Kigali, Rwanda",
-        status: "pending", // admin can approve later
-        profileImageUrl: null,
-        createdAt: new Date().toISOString()
-      });
-    }
-    
+    // Create school document in "schools" collection
+    await setDoc(doc(db, "schools", uid), {
+      schoolId: uid,
+      name: schoolName || "",
+      location: "",
+      totalMembers: 0,
+      status: "pending",
+      profileImageUrl: null,
+      createdAt
+    });
+
+    // Sign out so the user must explicitly log in after registration
+    await signOut(auth);
+
     return result;
   };
 
@@ -105,6 +118,7 @@ export const AuthProvider = ({ children }) => {
         photoURL: result.user.photoURL,
         role: "school",
         schoolId,
+        emailVerified: true, // Google accounts are pre-verified
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       });
@@ -130,6 +144,21 @@ export const AuthProvider = ({ children }) => {
     await signOut(auth);
   };
 
+  const markEmailAsVerified = async () => {
+    if (user) {
+      try {
+        await updateDoc(doc(db, "users", user.uid), {
+          emailVerified: true
+        });
+        setEmailVerified(true);
+        setUserData(prev => ({ ...prev, emailVerified: true }));
+      } catch (error) {
+        console.error("Error marking email as verified:", error);
+        throw error;
+      }
+    }
+  };
+
   const isAdmin = () => userRole === "admin";
   const isSchool = () => userRole === "school";
 
@@ -143,7 +172,10 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAdmin,
     isSchool,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    emailVerified,
+    markEmailAsVerified,
+    userData
   };
 
   return (

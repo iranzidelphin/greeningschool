@@ -74,7 +74,8 @@
               const user = userCredential.user;
               alert("Account created successfully ✅");
               console.log(user);
-              window.location.href = "dashboard.html";
+              // Redirect to login page after successful registration
+              window.location.href = "login.html";
             })
             .catch((error) => {
               alert(error.message);
@@ -109,7 +110,7 @@
                 alert("Login successful with Google ✅");
               }
 
-              window.location.href = "dashboard.html";
+              window.location.href = "login.html";
             })
             .catch((error) => {
               console.error("Google Sign-In Error:", error);
